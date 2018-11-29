@@ -11,7 +11,7 @@ import pymysql
 import os
 import pandas as pd
 import numpy as np
-import sql_opertaion as sql
+import sql_operation as sql
 import re
 import time
 from dateutil import parser

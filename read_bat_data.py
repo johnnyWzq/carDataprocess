@@ -9,7 +9,7 @@ Created on Tue Nov  6 14:10:45 2018
 import pymysql
 import os
 import pandas as pd
-import sql_opertaion as sql
+import sql_operation as sql
 import re
 import time
 
