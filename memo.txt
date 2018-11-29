@@ -1,0 +1,6 @@
+数据库：
+User:root password:wzqsql
+
+新建scheme：batterybase
+Table:以一个电池package在系统中的唯一id为表名，存储其所有的过程数据及单体详细数据；
+Table：batinfo，存储系统中所有电池package的基本信息，包含电池id，对应车辆id，车牌，vin等
