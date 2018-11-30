@@ -125,7 +125,7 @@ def transfer_data(cnt, cur_df):
     df.loc[cnt, 'data_num'] = len(cur_df)
     
     for col_name in cur_df.columns:
-        for fix in ['voltageb', 'current', '_sv', '_st', 'dqdv']:
+        for fix in ['soc', 'voltageb', 'current', '_sv', '_st', 'dqdv']:
             if fix in col_name:
                 cal_stat_row(cnt, cur_df[col_name], col_name, df)
                 cal_stat_row(cnt, cur_df[col_name].diff(), col_name + '_diff', df)
@@ -222,7 +222,7 @@ def main():
     #preprocessed_data = preprocess_package_data(config, id_list, '2018-1-1', '2018-12-30')
     #save_processed_data(preprocessed_data, 'preprocessed_data', file_dir)
     processed_data = split_data(file_dir)
-    save_processed_data(processed_data, 'processed_data.xlsx', file_dir)
+    save_processed_data(processed_data, 'processed_data', file_dir)
     
 if __name__ == '__main__':
     main()
