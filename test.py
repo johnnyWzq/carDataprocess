@@ -15,7 +15,10 @@ b = a[1,:]
 c=a[-2:]
 print(a)
 print(b)
-c = pd.DataFrame(a)
+cl = ['a','b','c']
+c = pd.DataFrame(a, columns=cl)
+
+c=c[(c['b']>=4) & (c['b']<=6)]
 print(c.shape)
 
 d=np.array([[1,2,3,4,5,6],[5,6,7,8,9,0]])

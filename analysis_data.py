@@ -37,6 +37,43 @@ def abnormal_check(df):
         statistics.loc['dis'] = statistics.loc['75%'] - statistics.loc['25%']#四分位数间距
         return statistics
     
+def UDC_analysis(df):
+    """
+    urban driving cycle analysis
+    """
+    print('selecting and clearing the columns of data...')
+    data = df.loc[:]
+    data['operation_time'] = data['data_num'] // 10 #取整
+    data['delta_soc'] = data['soc_max'] - data['soc_min']
+    data['regular_disc_cur'] = data['current_mean'] - data['current_std']
+    data = data.rename(columns = {'soc_max': 'start_soc', 'soc_min': 'end_soc',
+                  'voltageb_max': 'max_volt', 'voltageb_min': 'min_volt',
+                  'current_mean': 'mean_disc_cur', 'current_min': 'max_disc_cur',
+                  'current_max': 'max_c_cur',
+                  'max_sv_mean': 'mean_max_sv', 'min_sv_mean': 'mean_min_sv',
+                  'max_st_mean': 'mean_max_st', 'min_st_mean': 'mean_min_st'})
+    data = data[['operation_time', 'delta_soc',
+                'start_soc', 'end_soc', 'max_volt', 'min_volt', 
+                'regular_disc_cur', 'mean_disc_cur', 'max_disc_cur', 'max_c_cur',
+                'mean_max_sv', 'mean_min_sv',
+                'mean_max_st', 'mean_min_st']]
+    MAX_VOLTAGE = 450000
+    MIN_VOLTAGE = 290000
+    MAX_SINGLE_VOLTAGE = 4500
+    MIN_SINGLE_VOLTAGE = 2800
+    MAX_TEMPERATURE = 200
+    MIN_TEMPERSTURE = -40
+    data = data[(data['max_volt'] >= MIN_VOLTAGE) & (data['max_volt'] <= MAX_VOLTAGE)]
+    data = data[(data['min_volt'] >= MIN_VOLTAGE) & (data['min_volt'] <= MAX_VOLTAGE)]
+    data = data[(data['mean_min_sv'] >= MIN_SINGLE_VOLTAGE) & (data['mean_min_sv'] <= MAX_SINGLE_VOLTAGE)]
+    data = data[(data['mean_min_sv'] >= MIN_SINGLE_VOLTAGE) & (data['mean_min_sv'] <= MAX_SINGLE_VOLTAGE)]
+    data = data[(data['mean_max_st'] >= MIN_TEMPERSTURE) & (data['mean_max_st'] <= MAX_TEMPERATURE)]
+    data = data[(data['mean_min_st'] >= MIN_TEMPERSTURE) & (data['mean_min_st'] <= MAX_TEMPERATURE)]
+    data = data[data['delta_soc'] > 0]
+    func = lambda x: x.fillna(method='ffill').fillna(method='bfill').dropna()
+    data = func(data)
+    return data
+    
 def visualization(df):
     """
     """
@@ -49,10 +86,11 @@ def visualization(df):
 def main():
     file_dir = os.path.join(os.path.abspath('.'), 'data')
     file_name = 'processed_data.xlsx'
-    """
+    #"""
     #已保存
     data_dict = read_data(file_dir, file_name)
-    
+   # """
+    """
     stat_dict = {}
     for key, value in data_dict.items():
         if value.empty is True:
@@ -60,6 +98,15 @@ def main():
         stat_dict[key] = abnormal_check(value)
         print(stat_dict[key])
     save_processed_data(stat_dict, 'statis_data', file_dir)
+    """
+    #"""
+    udc_dict = {}
+    for key, value in data_dict.items():
+        if value.empty is True:
+            continue
+        udc_dict[key] = UDC_analysis(value)
+    save_processed_data(udc_dict, 'UDC_data', file_dir)
+   # """
     """
     stat_dict = read_data(file_dir, 'statis_data.xlsx')
     p1_list = ['voltageb', 'current', 
@@ -72,7 +119,7 @@ def main():
         if value.empty is True:
             continue
         visualization(value[para_list])
-
+    """
     
 if __name__ == '__main__':
     main()
