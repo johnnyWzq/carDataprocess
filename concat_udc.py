@@ -17,7 +17,7 @@ def main():
     df = pd.DataFrame()
     for key, value in data_dict.items():
         df = df.append(value, ignore_index=True)
-    df.to_csv(file_dir + '/UDC_data_contact.csv', encoding='gb18030')#, index=False)
+    df.to_csv(file_dir + '/UDC_data_concat.csv', encoding='gb18030')#, index=False)
     
 if __name__ == '__main__':
     main()

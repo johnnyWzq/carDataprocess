@@ -47,16 +47,16 @@ def calc_statis(df, keyword):
 def calc_ic(df):
     """
     #计算dq/dv值
-    #由于没有dq值，因此使用di代替
+    #由于没有dq值，因此使用i代替
     #计算dq/dv/sv_
     """
     #func=lambda x: x+1 if x==0 else x
-    df['dqdv'] = df['current'].diff() / df['voltageb'].diff()
-    df['dqdv_min_sv'] = df['dqdv'] / df['min_sv']
-    df['dqdv_max_sv'] = df['dqdv'] / df['max_sv']
-    df['dqdv_mean_sv'] = df['dqdv'] / df['mean_sv']
-    df['dqdv_median_sv'] = df['dqdv'] / df['median_sv']
-    df['dqdv_std_sv'] = df['dqdv'] / df['std_sv']
+    df['dqdv'] = df['current'] / df['voltageb'].diff()
+    df['dqdv_min_sv'] = df['dqdv'] / df['min_sv'].diff()
+    df['dqdv_max_sv'] = df['dqdv'] / df['max_sv'].diff()
+    df['dqdv_mean_sv'] = df['dqdv'] / df['mean_sv'].diff()
+    df['dqdv_median_sv'] = df['dqdv'] / df['median_sv'].diff()
+    df['dqdv_std_sv'] = df['dqdv'] / df['std_sv'].diff()
     
     
 def split_data(file_dir, data_dict=None):
@@ -110,7 +110,9 @@ def split_data(file_dir, data_dict=None):
                 calc_ic(cur_df)
                 data = data.append(transfer_data(cnt, cur_df))
                 cnt += 1
-        data_dict[key] = data  
+        #data.drop(['median_sv_diff_median', 'median_sv_diff2_median'], axis=1) #全是0
+        
+        data_dict[key] = data
     #data.to_csv(p_data_dir + 'data.csv', encoding='gb18030', index=False)
     return data_dict
 

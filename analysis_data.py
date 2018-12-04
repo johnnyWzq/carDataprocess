@@ -86,10 +86,10 @@ def visualization(df):
 def main():
     file_dir = os.path.join(os.path.abspath('.'), 'data')
     file_name = 'processed_data.xlsx'
-    #"""
+    """
     #已保存
     data_dict = read_data(file_dir, file_name)
-   # """
+    """
     """
     stat_dict = {}
     for key, value in data_dict.items():
@@ -99,14 +99,14 @@ def main():
         print(stat_dict[key])
     save_processed_data(stat_dict, 'statis_data', file_dir)
     """
-    #"""
+    """
     udc_dict = {}
     for key, value in data_dict.items():
         if value.empty is True:
             continue
         udc_dict[key] = UDC_analysis(value)
     save_processed_data(udc_dict, 'UDC_data', file_dir)
-   # """
+    """
     """
     stat_dict = read_data(file_dir, 'statis_data.xlsx')
     p1_list = ['voltageb', 'current', 
