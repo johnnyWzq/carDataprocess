@@ -84,10 +84,12 @@ def cv_model(model, allX, allY, cv_num=10):
     :param cv_num: cross-validation's fold number
     :return:
     """
+    print('----------------------------------------')
     print(model)
     print('cv_num=%s' %(cv_num))
     scoring = ['explained_variance', 'neg_mean_absolute_error', 'neg_mean_squared_error', 'r2']
-    scores = cross_validate(model, allX, allY, scoring=scoring, cv=cv_num)
+    scores = cross_validate(model, allX, allY, scoring=scoring, cv=cv_num,
+                            return_train_score=True)
     for i in scores:
         print("%s: %0.4f (+/- %0.4f)" % (i, scores[i].mean(), scores[i].std() * 2))
     return scores

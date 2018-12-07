@@ -6,6 +6,8 @@ Created on Thu Nov 29 09:43:33 2018
 @author: wuzhiqiang
 """
 
+print(__doc__)
+
 import os
 import pandas as pd
 import numpy as np
@@ -15,6 +17,7 @@ import utils as ut
 
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
+from sklearn import linear_model
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
@@ -213,23 +216,30 @@ def build_model(file_dir, data=None, split_mode='test',
     res = {}
     if split_mode == 'test':
         x_train, x_val, y_train, y_val = train_test_split(data_x, data_y, test_size=0.2,
-                                                          shuffle=True)
-        model = LinearRegression()
+                                                          shuffle=False)
+        model = linear_model.Ridge()
         res['lr'] = ut.test_model(model, x_train, x_val, y_train, y_val)
         ut.save_model(model, data_x.columns, pkl_dir)
-        model = DecisionTreeRegressor()
+        model = DecisionTreeRegressor(min_samples_leaf=6)
         res['dt'] = ut.test_model(model, x_train, x_val, y_train, y_val)
         ut.save_model(model, data_x.columns, pkl_dir, depth=3)
-        model = RandomForestRegressor()
+        model = RandomForestRegressor(bootstrap=True, criterion='mse', max_depth=None,
+                   max_features='auto', max_leaf_nodes=None,
+                   min_impurity_decrease=0.0, min_impurity_split=None,
+                   min_samples_leaf=5, min_samples_split=2,
+                   min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+                   oob_score=False, random_state=None, verbose=0, warm_start=False)
         res['rf'] = ut.test_model(model, x_train, x_val, y_train, y_val)
         ut.save_model(model, data_x.columns, pkl_dir, depth=3)
-        model = GradientBoostingRegressor()
+        model = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1,
+                                          max_depth=5, random_state=0, loss='ls',
+                                          max_leaf_nodes=None)
         res['gbdt'] = ut.test_model(model, x_train, x_val, y_train, y_val)
         ut.save_model(model, data_x.columns, pkl_dir)
     elif split_mode == 'cv':
         model = LinearRegression()
         res['lr'] = ut.cv_model(model, np_x, np_y)
-        model = DecisionTreeRegressor()
+        model = DecisionTreeRegressor(max_depth=8, min_samples_leaf=3)
         res['dt'] = ut.cv_model(model, np_x, np_y)
         model = RandomForestRegressor()
         res['rf'] = ut.cv_model(model, np_x, np_y)
@@ -251,14 +261,13 @@ def main():
     feature_data.to_excel(os.path.join(file_dir, 'feature_data.xlsx'))
     """  
     mode = 'test'
-    res = build_model(file_dir, split_mode=mode)
+    res = build_model(file_dir, split_mode=mode, feature_method='mutual_info_regression')
     if mode == 'test':
         d = {'lr':'线性回归(LR)', 'dt':'决策树回归', 'rf':'随机森林', 'gbdt':'GBDT',
             'eva':'评估结果'}
         writer = pd.ExcelWriter(os.path.join(file_dir, 'result.xlsx'))
         eva = pd.DataFrame()
         for s in res:
-            print(s)
             res[s]['train'].to_excel(writer, d[s])
             res[s]['test'].to_excel(writer, d[s], startcol=3)
             eva = eva.append(res[s]['eva'])
